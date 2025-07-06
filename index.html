@@ -5,13 +5,14 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>คำนวณอายุครรภ์และวันครบกำหนดคลอด</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
   <style>
     * {
       box-sizing: border-box;
     }
     body {
       font-family: 'Prompt', sans-serif;
-      background: #f0f4f8;
+      background: #e0f2fe;
       margin: 0;
       padding: 0;
       min-height: 100vh;
@@ -22,15 +23,15 @@
     .container {
       background: #ffffff;
       padding: 2rem;
-      border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
       width: 100%;
       max-width: 500px;
       margin: 1rem;
     }
     h2 {
       text-align: center;
-      color: #334155;
+      color: #1e3a8a;
       font-size: 2rem;
       margin-bottom: 1.5rem;
     }
@@ -65,13 +66,24 @@
     }
     .result {
       margin-top: 2rem;
-      font-size: 1.3rem;
-      color: #0f172a;
       text-align: center;
     }
     .result span {
       display: block;
-      margin-top: 0.5rem;
+      margin-top: 0.75rem;
+      font-size: 1.4rem;
+      padding: 1rem;
+      border-radius: 12px;
+    }
+    .ga {
+      background: #fef3c7;
+      color: #92400e;
+      font-weight: 600;
+    }
+    .edd {
+      background: #d1fae5;
+      color: #065f46;
+      font-weight: 600;
     }
   </style>
 </head>
@@ -90,37 +102,38 @@
       const resultDiv = document.getElementById("result");
 
       if (!lmpInput) {
-        resultDiv.innerText = "กรุณาเลือกวันแรกของประจำเดือน";
+        resultDiv.innerHTML = "<span style='color:red;'>กรุณาเลือกวันแรกของประจำเดือน</span>";
         return;
       }
 
       const lmpDate = new Date(lmpInput);
       const today = new Date();
 
-      // คำนวณอายุครรภ์ (ต่างวัน) แบบปกติ
+      // คำนวณอายุครรภ์
       const diffTime = today - lmpDate;
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       const weeks = Math.floor(diffDays / 7);
       const days = diffDays % 7;
 
-      // คำนวณวันคลอด (EDD) ตาม Naegele’s rule
-      const edd = new Date(lmpDate);
+      // คำนวณ EDD ตาม Naegele's Rule: LMP + 7 วัน, -3 เดือน, +1 ปี
+      let edd = new Date(lmpDate);
       edd.setDate(edd.getDate() + 7);
-      const eddMonth = edd.getMonth() - 2; // ลบ 3 เดือน = -2 เพราะ +1 แล้ว
+      let eddMonth = edd.getMonth() - 2;
       if (eddMonth < 0) {
         edd.setFullYear(edd.getFullYear() + 1);
-        edd.setMonth(eddMonth + 12);
+        eddMonth += 12;
       } else {
-        edd.setMonth(eddMonth);
+        edd.setFullYear(edd.getFullYear() + 1);
       }
+      edd.setMonth(eddMonth);
 
       const eddStr = edd.toLocaleDateString('th-TH', {
         year: 'numeric', month: 'long', day: 'numeric'
       });
 
       resultDiv.innerHTML = `
-        <span>อายุครรภ์ประมาณ <strong>${weeks} สัปดาห์ ${days} วัน</strong></span>
-        <span>กำหนดคลอด (EDD): <strong>${eddStr}</strong></span>
+        <span class="ga">อายุครรภ์ประมาณ ${weeks} สัปดาห์ ${days} วัน</span>
+        <span class="edd">กำหนดคลอด (EDD): ${eddStr}</span>
       `;
     }
   </script>
