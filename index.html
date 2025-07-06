@@ -4,118 +4,124 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คำนวณอายุครรภ์</title>
+  <title>คำนวณอายุครรภ์และวันครบกำหนดคลอด</title>
   <style>
     * {
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Prompt', sans-serif;
       background: #f0f4f8;
       margin: 0;
       padding: 0;
+      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
     }
-
     .container {
-      background: #fff;
+      background: #ffffff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
       width: 100%;
-      max-width: 420px;
+      max-width: 500px;
       margin: 1rem;
     }
-
     h2 {
       text-align: center;
+      color: #334155;
+      font-size: 2rem;
       margin-bottom: 1.5rem;
-      color: #3b3b3b;
-      font-size: 1.5rem;
     }
-
     label {
-      font-weight: 500;
-      display: block;
+      font-size: 1.1rem;
+      font-weight: 600;
       margin-bottom: 0.5rem;
-      color: #333;
-      font-size: 1rem;
+      display: block;
+      color: #1e293b;
     }
-
     input[type="date"] {
       width: 100%;
-      padding: 0.75rem;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 1rem;
-      margin-bottom: 1rem;
+      padding: 1rem;
+      font-size: 1.1rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      margin-bottom: 1.5rem;
     }
-
     button {
       width: 100%;
-      padding: 0.75rem;
-      background-color: #38bdf8;
+      padding: 1rem;
+      background-color: #0ea5e9;
       border: none;
-      color: white;
-      font-size: 1rem;
-      border-radius: 8px;
+      border-radius: 10px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #ffffff;
       cursor: pointer;
     }
-
     button:hover {
-      background-color: #0ea5e9;
+      background-color: #0284c7;
     }
-
     .result {
-      margin-top: 1rem;
-      font-size: 1.2rem;
-      text-align: center;
+      margin-top: 2rem;
+      font-size: 1.3rem;
       color: #0f172a;
+      text-align: center;
     }
-
-    @media (max-width: 480px) {
-      h2 {
-        font-size: 1.3rem;
-      }
-      .container {
-        padding: 1.5rem 1rem;
-      }
+    .result span {
+      display: block;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🍼 คำนวณอายุครรภ์</h2>
+    <h2>🍼 คำนวณอายุครรภ์และวันคลอด</h2>
     <label for="lmp">วันแรกของประจำเดือนครั้งสุดท้าย</label>
-    <input type="date" id="lmp" name="lmp">
+    <input type="date" id="lmp">
     <button onclick="calculate()">คำนวณ</button>
     <div class="result" id="result"></div>
   </div>
 
   <script>
     function calculate() {
-      const lmp = document.getElementById('lmp').value;
-      if (!lmp) {
-        document.getElementById('result').innerText = 'กรุณาเลือกวันที่ก่อน';
+      const lmpInput = document.getElementById("lmp").value;
+      const resultDiv = document.getElementById("result");
+
+      if (!lmpInput) {
+        resultDiv.innerText = "กรุณาเลือกวันแรกของประจำเดือน";
         return;
       }
 
-      const lmpDate = new Date(lmp);
+      const lmpDate = new Date(lmpInput);
       const today = new Date();
+
+      // คำนวณอายุครรภ์ (ต่างวัน) แบบปกติ
       const diffTime = today - lmpDate;
       const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
       const weeks = Math.floor(diffDays / 7);
       const days = diffDays % 7;
 
-      if (diffDays < 0) {
-        document.getElementById('result').innerText = 'วันที่ไม่ถูกต้อง';
+      // คำนวณวันคลอด (EDD) ตาม Naegele’s rule
+      const edd = new Date(lmpDate);
+      edd.setDate(edd.getDate() + 7);
+      const eddMonth = edd.getMonth() - 2; // ลบ 3 เดือน = -2 เพราะ +1 แล้ว
+      if (eddMonth < 0) {
+        edd.setFullYear(edd.getFullYear() + 1);
+        edd.setMonth(eddMonth + 12);
       } else {
-        document.getElementById('result').innerText = `อายุครรภ์ประมาณ ${weeks} สัปดาห์ ${days} วัน`;
+        edd.setMonth(eddMonth);
       }
+
+      const eddStr = edd.toLocaleDateString('th-TH', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      resultDiv.innerHTML = `
+        <span>อายุครรภ์ประมาณ <strong>${weeks} สัปดาห์ ${days} วัน</strong></span>
+        <span>กำหนดคลอด (EDD): <strong>${eddStr}</strong></span>
+      `;
     }
   </script>
 </body>
