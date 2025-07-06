@@ -3,36 +3,49 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>คำนวณอายุครรภ์</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Prompt', sans-serif;
       background: #f0f4f8;
+      margin: 0;
+      padding: 0;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      min-height: 100vh;
     }
+
     .container {
       background: #fff;
       padding: 2rem;
       border-radius: 16px;
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-      max-width: 400px;
       width: 100%;
+      max-width: 420px;
+      margin: 1rem;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 1.5rem;
       color: #3b3b3b;
+      font-size: 1.5rem;
     }
+
     label {
       font-weight: 500;
       display: block;
       margin-bottom: 0.5rem;
       color: #333;
+      font-size: 1rem;
     }
+
     input[type="date"] {
       width: 100%;
       padding: 0.75rem;
@@ -41,6 +54,7 @@
       font-size: 1rem;
       margin-bottom: 1rem;
     }
+
     button {
       width: 100%;
       padding: 0.75rem;
@@ -51,14 +65,25 @@
       border-radius: 8px;
       cursor: pointer;
     }
+
     button:hover {
       background-color: #0ea5e9;
     }
+
     .result {
       margin-top: 1rem;
       font-size: 1.2rem;
       text-align: center;
       color: #0f172a;
+    }
+
+    @media (max-width: 480px) {
+      h2 {
+        font-size: 1.3rem;
+      }
+      .container {
+        padding: 1.5rem 1rem;
+      }
     }
   </style>
 </head>
