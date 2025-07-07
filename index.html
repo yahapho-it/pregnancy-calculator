@@ -1,139 +1,101 @@
-
 <!DOCTYPE html>
 <html lang="th">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>คำนวณอายุครรภ์และวันครบกำหนดคลอด</title>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>คำนวณอายุครรภ์</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-    }
     body {
       font-family: 'Prompt', sans-serif;
-      background: #e0f2fe;
+      background: #f0f4f8;
       margin: 0;
       padding: 0;
-      min-height: 100vh;
       display: flex;
       justify-content: center;
       align-items: center;
+      min-height: 100vh;
     }
     .container {
-      background: #ffffff;
-      padding: 2rem;
+      background: white;
       border-radius: 20px;
-      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-      width: 100%;
-      max-width: 500px;
-      margin: 1rem;
-    }
-    h2 {
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
       text-align: center;
-      color: #1e3a8a;
-      font-size: 2rem;
-      margin-bottom: 1.5rem;
     }
-    label {
-      font-size: 1.1rem;
-      font-weight: 600;
-      margin-bottom: 0.5rem;
-      display: block;
-      color: #1e293b;
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #1c4e80;
     }
-    input[type="date"] {
+    input[type="date"], button {
       width: 100%;
-      padding: 1rem;
-      font-size: 1.1rem;
-      border: 1px solid #cbd5e1;
+      padding: 12px;
+      margin-top: 10px;
       border-radius: 10px;
-      margin-bottom: 1.5rem;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
     }
     button {
-      width: 100%;
-      padding: 1rem;
-      background-color: #0ea5e9;
+      background-color: #00aaff;
+      color: white;
       border: none;
-      border-radius: 10px;
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #ffffff;
       cursor: pointer;
+      font-weight: bold;
     }
     button:hover {
-      background-color: #0284c7;
+      background-color: #008fcc;
     }
     .result {
-      margin-top: 2rem;
-      text-align: center;
-    }
-    .result span {
-      display: block;
-      margin-top: 0.75rem;
-      font-size: 1.4rem;
-      padding: 1rem;
-      border-radius: 12px;
-    }
-    .ga {
-      background: #fef3c7;
-      color: #92400e;
-      font-weight: 600;
-    }
-    .edd {
-      background: #d1fae5;
-      color: #065f46;
-      font-weight: 600;
+      margin-top: 20px;
+      background: #e0f7fa;
+      border-left: 6px solid #00acc1;
+      padding: 15px;
+      border-radius: 10px;
+      color: #004d40;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>🍼 คำนวณอายุครรภ์และวันคลอด</h2>
+    <h1>🍼 คำนวณอายุครรภ์</h1>
     <label for="lmp">วันแรกของประจำเดือนครั้งสุดท้าย</label>
-    <input type="date" id="lmp">
+    <input type="date" id="lmp" />
     <button onclick="calculate()">คำนวณ</button>
-    <div class="result" id="result"></div>
+    <div class="result" id="result" style="display:none;"></div>
   </div>
 
   <script>
     function calculate() {
-      const lmpInput = document.getElementById("lmp").value;
-      const resultDiv = document.getElementById("result");
-
-      if (!lmpInput) {
-        resultDiv.innerHTML = "<span style='color:red;'>กรุณาเลือกวันแรกของประจำเดือน</span>";
+      const lmp = new Date(document.getElementById('lmp').value);
+      if (!lmp.getTime()) {
+        alert('กรุณาเลือกวันแรกของประจำเดือน');
         return;
       }
 
-      const lmpDate = new Date(lmpInput);
       const today = new Date();
+      const msInDay = 1000 * 60 * 60 * 24;
+      const daysPregnant = Math.floor((today - lmp) / msInDay);
+      const weeks = Math.floor(daysPregnant / 7);
+      const days = daysPregnant % 7;
 
-      // คำนวณอายุครรภ์
-      const diffTime = today - lmpDate;
-      const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-      const weeks = Math.floor(diffDays / 7);
-      const days = diffDays % 7;
-
-      // คำนวณ EDD ตาม Naegele's Rule: LMP + 7 วัน, -3 เดือน, +1 ปี
-      let edd = new Date(lmpDate);
+      // คำนวณวันครบกำหนดคลอด (EDD) = LMP + 7 วัน - 3 เดือน + 1 ปี
+      const edd = new Date(lmp);
       edd.setDate(edd.getDate() + 7);
-      let eddMonth = edd.getMonth() - 2;
-      if (eddMonth < 0) {
-        edd.setFullYear(edd.getFullYear() + 1);
-        eddMonth += 12;
-      } else {
-        edd.setFullYear(edd.getFullYear() + 1);
-      }
-      edd.setMonth(eddMonth);
-
+      edd.setMonth(edd.getMonth() - 3);
+      edd.setFullYear(edd.getFullYear() + 1);
       const eddStr = edd.toLocaleDateString('th-TH', {
         year: 'numeric', month: 'long', day: 'numeric'
       });
 
-      resultDiv.innerHTML = `
-        <span class="ga">อายุครรภ์ประมาณ ${weeks} สัปดาห์ ${days} วัน</span>
-        <span class="edd">กำหนดคลอด (EDD): ${eddStr}</span>
+      const result = document.getElementById('result');
+      result.style.display = 'block';
+      result.innerHTML = `
+        🤰 อายุครรภ์ประมาณ <b>${weeks} สัปดาห์ ${days} วัน</b><br/>
+        📅 วันครบกำหนดคลอดโดยประมาณคือ <b>${eddStr}</b>
       `;
     }
   </script>
